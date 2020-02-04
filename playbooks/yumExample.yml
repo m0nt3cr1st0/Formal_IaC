@@ -1,0 +1,6 @@
+---
+- tasks:
+  - name: Install python package
+    yum:
+      name: python
+      state: present  
