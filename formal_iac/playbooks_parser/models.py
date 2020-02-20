@@ -13,7 +13,7 @@ class State(models.Model):
     set_of_packages = models.ManyToManyField(Package)
 
 
-class Task(models.model):
+class Task(models.Model):
     task_name = models.CharField(max_length=200)
     task_module = models.CharField(max_length=200)
     # module_arguments should be a list of strings for each option
@@ -22,6 +22,6 @@ class Task(models.model):
     module_arguments = models.CharField(max_length=200)
 
 
-class Playbook(models.model):
+class Playbook(models.Model):
     list_of_tasks = models.ManyToManyField(Task)
 
