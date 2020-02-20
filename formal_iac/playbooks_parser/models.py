@@ -10,6 +10,7 @@ class Package(models.Model):
 
 
 class State(models.Model):
+    state_name = models.CharField(max_length=200)
     set_of_packages = models.ManyToManyField(Package)
 
 
@@ -23,5 +24,6 @@ class Task(models.Model):
 
 
 class Playbook(models.Model):
+    playbook_name = models.CharField(max_length=200)
     list_of_tasks = models.ManyToManyField(Task)
 
