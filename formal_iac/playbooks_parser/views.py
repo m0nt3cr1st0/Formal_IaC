@@ -11,14 +11,14 @@ def index(request):
     return HttpResponse(template.render())
 
 
-def playbook(request, playbook_id):
-    first_playbook = Playbook.objects.order_by('name')[0]
+def playbook(request):
+    first_playbook = Playbook.objects.order_by('playbook_name')[0]
     output = first_playbook.playbook_name
     return HttpResponse(output)
 
 
 def playbook_parsed(request, playbook_id):
-    first_playbook = Playbook.objects.order_by('name')[0]
+    first_playbook = Playbook.objects.order_by('playbook_name')[0]
     output = first_playbook.playbook_name
     return HttpResponse("You're looking at playbook %s parsed" % playbook_id)
 
