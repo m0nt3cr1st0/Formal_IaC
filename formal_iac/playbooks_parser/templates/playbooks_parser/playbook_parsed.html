@@ -1,0 +1,9 @@
+{% if latest_question_list %}
+    <ul>
+    {% for state in states_list %}
+        <li><a href="/playbooks_parser/{{ state.id }}/">{{ state.state_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No states are available.</p>
+{% endif %}
