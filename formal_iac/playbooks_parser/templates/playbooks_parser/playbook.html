@@ -1,9 +1,6 @@
-{% if latest_question_list %}
-    <ul>
-    {% for state in states_list %}
-        <li><a href="/playbooks_parser/{{ state.id }}/">{{ state.state_name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No states are available.</p>
-{% endif %}
+<h1>{{ requested_playbook.playbook_name }}</h1>
+<ul>
+{% for task in playbook.list_of_tasks.all %}
+    <li>{{ task.task_name }}</li>
+{% endfor %}
+</ul>

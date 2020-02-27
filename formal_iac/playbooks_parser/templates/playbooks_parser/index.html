@@ -1,12 +1,9 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <title> django - Hello, world </title>
-    </head>
-    <body>
-        <center>
-            <h1> Hello, World!</h1>
-            This is my first Django app.
-        </center>
-    </body>
-</html>
+{% if latest_uploaded_playbooks %}
+    <ul>
+    {% for playbook in latest_uploaded_playbooks %}
+        <li><a href="{% url 'playbooks_parser:playbook' playbook.id  %}">{{ playbook.playbook_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No playbooks are available.</p>
+{% endif %}
