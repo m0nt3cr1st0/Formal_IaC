@@ -25,4 +25,16 @@ def playbook(request, playbook_id):
     return render(request, 'playbooks/playbook.html', context)
 
 
+def playbook_parsed(request, playbook_id):
+    first_playbook = Playbook.objects.order_by('playbook_name')[0]
+    output = first_playbook.playbook_name
+    return HttpResponse("You're looking at playbook %s parsed" % playbook_id)
 
+
+# Quickest way to return a rendered template
+def state(request):
+    latest_states_list = State.objects.order_by('state_name')[:5]
+    context = {
+        'states_list': latest_states_list,
+    }
+    return render(request, "playbooks_parser/state.html", context)
