@@ -25,5 +25,6 @@ class Task(models.Model):
 
 class Playbook(models.Model):
     playbook_name = models.CharField(max_length=200)
+    playbook_content = models.TextField()
     list_of_tasks = models.ManyToManyField(Task)
 
