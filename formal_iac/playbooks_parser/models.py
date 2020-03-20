@@ -3,15 +3,18 @@ from django.db import models
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
-    package_version = models.FloatField
+    package_version = models.FloatField()
 
     def __str__(self):
-        return self.package_name
+        return self.package_name + " " + str(self.package_version)
 
 
 class State(models.Model):
     state_name = models.CharField(max_length=200)
     set_of_packages = models.ManyToManyField(Package)
+
+    def __str__(self):
+        return self.state_name
 
 
 class Task(models.Model):
@@ -22,9 +25,14 @@ class Task(models.Model):
     # module_arguments should be a list of strings for each argument
     module_arguments = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.task_name
+
 
 class Playbook(models.Model):
     playbook_name = models.CharField(max_length=200)
     playbook_content = models.TextField()
     list_of_tasks = models.ManyToManyField(Task)
 
+    def __str__(self):
+        return self.playbook_name
