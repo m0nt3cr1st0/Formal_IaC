@@ -132,4 +132,5 @@ dmypy.json
 .idea
 
 # Custom files 
+examples/*
 formal_iac/examples/*
