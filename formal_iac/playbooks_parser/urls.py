@@ -5,11 +5,14 @@ from . import views
 app_name = 'playbooks_parser'
 urlpatterns = [
     # ex: /playbooks_parser/
-    path('', views.index, name='index'),
+    path('', views.index_view, name='index_view'),
     # ex: /playbooks_parser/5
-    path('<int:playbook_id>', views.playbook, name='playbook'),
+    path('<int:playbook_id>', views.playbook_view, name='playbook_view'),
     # ex: /playbooks_parser/5/parsed/
-    path('<int:playbook_id>/parsed/', views.playbook_parsed, name='playbook_parsed'),
-    # ex: /playbooks_parser/states
-    path('states', views.state, name='state')
+    path('<int:playbook_id>/parsed/', views.playbook_parsed_view, name='playbook_parsed_view'),
+    # ex: /playbooks_parser/demo
+    path('demo', views.demo_view, name='demo_view'),
+    # ex: /playbooks_parser/demo_result_view
+    path('demo_result', views.demo_result_view, name='demo_result_view')
 ]
+

@@ -1,6 +1,0 @@
-ansible 2.5
-apache2-bin 2.4
-docker 1.5
-grafana 6.6
-python3.6-minimal 3.6
-zip 3.0
