@@ -13,9 +13,6 @@ class State(models.Model):
     state_name = models.CharField(max_length=200)
     set_of_packages = models.ManyToManyField(Package)
 
-    def __str__(self):
-        return self.state_name
-
 
 class Task(models.Model):
     task_name = models.CharField(max_length=200)
@@ -31,6 +28,7 @@ class Task(models.Model):
 
 class Playbook(models.Model):
     playbook_name = models.CharField(max_length=200)
+    # Text Field instead of Charfield as it is potentially a huge amount of characters
     playbook_content = models.TextField()
     list_of_tasks = models.ManyToManyField(Task)
 
