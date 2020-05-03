@@ -1,7 +1,7 @@
 {% if latest_uploaded_playbooks %}
     <ul>
     {% for playbook in latest_uploaded_playbooks %}
-        <li><a href="{% url 'playbooks_parser:playbook' playbook.id  %}">{{ playbook.playbook_name }}</a></li>
+        <li><a href="{% url 'playbooks_parser:playbook_view' playbook.id  %}">{{ playbook.playbook_name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

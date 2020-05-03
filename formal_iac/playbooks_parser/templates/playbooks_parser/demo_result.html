@@ -10,21 +10,31 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col">
-                <form action="{% url 'playbooks_parser:demo_result_view' %}" method="post">
-                    {% csrf_token %}
-                    <div>
-                        <p> Select an example playbook: </p>
-                        {% for example in playbooks_examples %}
-                            <input type="radio" name="playbook_example" id="playbook_example_{{ example.id }}" value="{{ example.id }}">
-                            <label for="playbook_example_{{ example.id }}"> {{ example.playbook_name }} </label><br>
+            <div class="col-md-8 parsed-playbook">
+                <!-- This paragraph will be filled with the parsed playbook -->
+                {% if parsed_playbook %}
+                <ul>
+                    {% for task in playbook_tasks %}
+                    <li> {{ task }} </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <!-- Maybe include the state graph as well? -->
+            </div>
+            <div class="col-md-4">
+                <!-- If the request to parse the playbook has been done then display this paragraph -->
+                {% if parsed_playbook %}
+                <div>
+                    <p>
+                    Your playbook contains:
+                    </p>
+                    <ul>
+                        {% for task in playbook_tasks %}
+                        <item> {{ task.name }} </item>
                         {% endfor %}
-                            <input type="radio" name="playbook_example" id="upload_own_example" value="own_example">
-                            <label for="upload_own_example"> Upload your own example </label><br>
-                    </div>
-                    <input type="file" name="Or upload your own playbook" value="uploaded-playbook"> <br><br>
-                    <input type="submit" value="Analyze">
-                </form>
+                    </ul>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

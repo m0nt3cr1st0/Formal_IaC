@@ -1,0 +1,8 @@
+body {
+    background: darkslategray;
+    color: yellow;
+}
+
+.parsed-playbook {
+    border: thin solid;
+}
