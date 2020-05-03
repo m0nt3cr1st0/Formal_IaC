@@ -66,7 +66,7 @@ def demo_result_view(request):
         'parsed_playbook': str(list_of_tasks),
         'playbook_tasks': list_of_tasks
     }
-    return render(request, "playbooks_parser/demo.html", context)
+    return render(request, "playbooks_parser/demo_result.html", context)
 
 
 # Quick PoC
