@@ -34,3 +34,8 @@ class Playbook(models.Model):
 
     def __str__(self):
         return self.playbook_name
+
+    @classmethod
+    def create(cls, playbook_name, playbook_content):
+        playbook = cls(playbook_name=playbook_name, playbook_content=playbook_content)
+        return playbook
