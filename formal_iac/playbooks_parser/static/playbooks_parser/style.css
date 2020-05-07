@@ -1,6 +1,7 @@
 body {
     background: darkslategray;
     color: yellow;
+    margin-top: 30px;
 }
 
 .parsed-playbook {

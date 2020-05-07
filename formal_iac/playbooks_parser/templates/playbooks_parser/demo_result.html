@@ -13,11 +13,10 @@
             <div class="col-md-8 parsed-playbook">
                 <!-- This paragraph will be filled with the parsed playbook -->
                 {% if parsed_playbook %}
-                <ul>
+                <br>
                     {% for task in playbook_tasks %}
-                    <li> {{ task }} </li>
+                    <p> {{ task }} </p>
                     {% endfor %}
-                </ul>
                 {% endif %}
                 <!-- Maybe include the state graph as well? -->
             </div>
@@ -26,11 +25,11 @@
                 {% if parsed_playbook %}
                 <div>
                     <p>
-                    Your playbook contains:
+                    Your playbook contains the following tasks:
                     </p>
                     <ul>
                         {% for task in playbook_tasks %}
-                        <item> {{ task.name }} </item>
+                        <li> {{ task.name }} </li>
                         {% endfor %}
                     </ul>
                 </div>

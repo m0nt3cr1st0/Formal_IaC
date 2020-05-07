@@ -11,18 +11,9 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <form action="{% url 'playbooks_parser:demo_result_view' %}" method="post">
+                <form action="{% url 'playbooks_parser:demo_result_view' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div>
-                        <p> Select an example playbook: </p>
-                        {% for example in playbooks_examples %}
-                            <input type="radio" name="playbook_example" id="playbook_example_{{ example.id }}" value="{{ example.id }}">
-                            <label for="playbook_example_{{ example.id }}"> {{ example.playbook_name }} </label><br>
-                        {% endfor %}
-                            <input type="radio" name="playbook_example" id="upload_own_example" value="own_example">
-                            <label for="upload_own_example"> Upload your own example </label><br>
-                    </div>
-                    <input type="file" name="Or upload your own playbook" value="uploaded-playbook"> <br><br>
+                    {{ form }}
                     <input type="submit" value="Analyze">
                 </form>
             </div>
