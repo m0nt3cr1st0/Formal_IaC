@@ -4,12 +4,12 @@ from django.http import JsonResponse
 # views.py
 from django.db import connections
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 
 from .models import Task, Playbook, State, Package
-
+from .forms import ParsePlaybookDemoForm
 from graphviz import Digraph
 import yaml
 
@@ -52,16 +52,33 @@ def state_view(request):
 
 
 def demo_view(request):
-    playbooks_example_list = [Playbook.objects.get(pk=1), Playbook.objects.get(pk=2)]
+    playbook_example_list = [Playbook.objects.get(pk=1), Playbook.objects.get(pk=2)]
+    form = ParsePlaybookDemoForm()
     context = {
-        'playbooks_examples': playbooks_example_list
+        'form': form
     }
-    return render(request, "playbooks_parser/demo.html", context)
+    return render(request, 'playbooks_parser/demo.html', context)
+
+
+# Auxiliary function to create a playbook from an uploaded file
+def create_playbook(f):
+    playbook_content = f
+    for chunk in f.chunks():
+        playbook_content += chunk
+    return Playbook.create("Uploaded_playbook", playbook_content)
 
 
 def demo_result_view(request):
-    playbook_requested_to_parse = Playbook.objects.get(pk=request.POST['playbook_example'])
-    list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
+    if request.method == 'POST':
+        # Retrieve posted information
+        form = ParsePlaybookDemoForm(request.POST, request.FILES)
+        # If the user uploaded a playbook
+        if form.data['uploaded_playbook']:
+            playbook_requested_to_parse = create_playbook(request.FILES['uploaded_playbook'])
+        # The user selected an example
+        else:
+            playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
+        list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
     context = {
         'parsed_playbook': str(list_of_tasks),
         'playbook_tasks': list_of_tasks
