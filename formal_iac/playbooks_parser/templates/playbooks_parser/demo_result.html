@@ -9,14 +9,14 @@
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <nav class="navbar">
+        <nav class="navbar">
             <a href="{% url 'playbooks_parser:index_view' %}" class="nav-item">
                 <img src="{% static 'playbooks_parser/dtu_logo.jpg' %}" width="40" height="40">
             </a>
             <a href="{% url 'playbooks_parser:demo_view' %}" class="nav-item"> Demo </a>
             <a href="/admin" class="nav-item"> Admin </a>
-            </nav>
+        </nav>
+        <div class="row">
             <div class="col-md-8 parsed-playbook">
                 <!-- This paragraph will be filled with the parsed playbook -->
                 {% if parsed_playbook %}

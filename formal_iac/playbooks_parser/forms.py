@@ -6,5 +6,5 @@ EXAMPLE_PLAYBOOKS = [('1', 'Install python and wget'), ('2', 'Install httpd and 
 class ParsePlaybookDemoForm(forms.Form):
     playbook_examples = forms.ChoiceField(label='Parse a playbook example', widget=forms.RadioSelect,
                                           choices=EXAMPLE_PLAYBOOKS)
-    uploaded_playbook = forms.FileField(label='Upload your own playbook')
+    uploaded_playbook = forms.FileField(label='Upload your own playbook', required=False)
 
