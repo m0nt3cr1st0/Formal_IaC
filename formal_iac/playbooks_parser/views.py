@@ -61,19 +61,21 @@ def demo_view(request):
 
 # Auxiliary function to create a playbook from an uploaded file
 def create_playbook(f):
-    playbook_content = f
-    for chunk in f.chunks():
-        playbook_content += chunk
+    playbook_content = ""
+    for line in f:
+        playbook_content = playbook_content + line.decode("utf-8")
     return Playbook.create("Uploaded_playbook", playbook_content)
 
 
 def demo_result_view(request):
     if request.method == 'POST':
         # Retrieve posted information
-        form = ParsePlaybookDemoForm(request.POST)
+        form = ParsePlaybookDemoForm(request.POST, request.FILES)
         if form.is_valid():
-            print(form.cleaned_data['playbook_examples'])
-            playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
+            if form.cleaned_data['playbook_examples'] != '0':
+                playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
+            else:
+                playbook_requested_to_parse = create_playbook(form.cleaned_data['uploaded_playbook'])
             list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
             context = {
                 'parsed_playbook': str(list_of_tasks),

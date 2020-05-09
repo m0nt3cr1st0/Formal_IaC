@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <form action="{% url 'playbooks_parser:demo_result_view' %}" method="post" enctype="multipart/form-data">
+                <form enctype="multipart/form-data" method="post" action="{% url 'playbooks_parser:demo_result_view' %}">
                     {% csrf_token %}
                     {{ form }}
                     <input type="submit" value="Analyze">
