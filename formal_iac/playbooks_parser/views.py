@@ -52,7 +52,6 @@ def state_view(request):
 
 
 def demo_view(request):
-    playbook_example_list = [Playbook.objects.get(pk=1), Playbook.objects.get(pk=2)]
     form = ParsePlaybookDemoForm()
     context = {
         'form': form
@@ -71,20 +70,17 @@ def create_playbook(f):
 def demo_result_view(request):
     if request.method == 'POST':
         # Retrieve posted information
-        form = ParsePlaybookDemoForm(request.POST, request.FILES)
-        # If the user uploaded a playbook
-        if form.data['uploaded_playbook']:
-            playbook_requested_to_parse = create_playbook(request.FILES['uploaded_playbook'])
-        # The user selected an example
-        else:
+        form = ParsePlaybookDemoForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data['playbook_examples'])
             playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
-        list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
-    context = {
-        'parsed_playbook': str(list_of_tasks),
-        'playbook_tasks': list_of_tasks
-    }
-    return render(request, "playbooks_parser/demo_result.html", context)
-
+            list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
+            context = {
+                'parsed_playbook': str(list_of_tasks),
+                'playbook_tasks': list_of_tasks
+            }
+            return render(request, "playbooks_parser/demo_result.html", context)
+    return {}
 
 # Quick PoC
 def graph_view(request):
