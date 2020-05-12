@@ -17,19 +17,17 @@
             <a href="/admin" class="nav-item"> Admin </a>
         </nav>
         <div class="row">
+            <!-- This paragraph will be filled with the parsed playbook -->
+            {% if playbook_tasks %}
             <div class="col-md-8 parsed-playbook">
-                <!-- This paragraph will be filled with the parsed playbook -->
-                {% if parsed_playbook %}
                 <br>
                     {% for task in playbook_tasks %}
                     <p> {{ task }} </p>
                     {% endfor %}
-                {% endif %}
-                <!-- Maybe include the state graph as well? -->
             </div>
+            <!-- Maybe include the state graph as well? -->
             <div class="col-md-4">
                 <!-- If the request to parse the playbook has been done then display this paragraph -->
-                {% if parsed_playbook %}
                 <div>
                     <p>
                     Your playbook contains the following tasks:
@@ -40,8 +38,10 @@
                         {% endfor %}
                     </ul>
                 </div>
-                {% endif %}
             </div>
+            {% else %}
+            <p> Ops! it seems you tried to parse an empty playbook </p>
+            {% endif %}
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

@@ -76,7 +76,10 @@ def demo_result_view(request):
                 playbook_requested_to_parse = create_playbook(form.cleaned_data['uploaded_playbook'])
             else:
                 playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
-            list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
+            if playbook_requested_to_parse.playbook_content != "":
+                list_of_tasks = parse_playbook_aux(playbook_requested_to_parse.playbook_content)
+            else:
+                list_of_tasks = []
             context = {
                 'parsed_playbook': str(list_of_tasks),
                 'playbook_tasks': list_of_tasks
