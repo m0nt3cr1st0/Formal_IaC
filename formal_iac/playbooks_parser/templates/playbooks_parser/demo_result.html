@@ -18,10 +18,11 @@
         </nav>
         <div class="row">
             <!-- This paragraph will be filled with the parsed playbook -->
-            {% if playbook_tasks %}
+            {% if parsed_playbook %}
             <div class="col-md-8 parsed-playbook">
                 <br>
-                    {% for task in playbook_tasks %}
+                    <p> Your playbook contains the following tasks </p>
+                    {% for task in parsed_playbook %}
                     <p> {{ task }} </p>
                     {% endfor %}
             </div>
@@ -29,14 +30,24 @@
             <div class="col-md-4">
                 <!-- If the request to parse the playbook has been done then display this paragraph -->
                 <div>
+                    {% if playbook_warnings %}
                     <p>
-                    Your playbook contains the following tasks:
+                    The execution of your playbook will introduce the following vulnerabilities into your system:
                     </p>
                     <ul>
-                        {% for task in playbook_tasks %}
-                        <li> {{ task.name }} </li>
+                        {% for warning in playbook_warnings %}
+                        <li> {{ warning.0 }}:
+                            <ul>
+                                {% for cve in warning.1 %}
+                                <li><a href="{{ cve.1 }}">{{ cve.0 }} </a>  Impact: {{ cve.2 }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% endfor %}
                     </ul>
+                    {% else %}
+                        <p> Congrats! Your playbook does not contain any vulnerable package! </p>
+                    {% endif %}
                 </div>
             </div>
             {% else %}

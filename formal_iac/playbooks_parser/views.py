@@ -18,22 +18,25 @@ import requests
 import yaml
 
 
-def parse_playbook_aux(playbook_content: str, vuln_packages):
+def parse_playbook_aux(playbook_content: str):
     playbook_tasks = yaml.load(playbook_content)[0]['tasks']
+    return playbook_tasks
+
+
+def analyse_vuln_packages_aux(playbook_tasks, vuln_packages):
     playbook_warnings = []
     for task in playbook_tasks:
         # TO-DO: make it expandable to other ansible modules
         task_command = 'yum'
         package_name = task[task_command]['name']
         package_operation = task[task_command]['state']
-        if vuln_packages['package_name']:
-            playbook_warnings.append(vuln_packages['package_name'])
+        if package_name in vuln_packages.keys():
+            playbook_warnings.append((package_name, vuln_packages[package_name]))
     return playbook_warnings
 
 
 def create_dict_vuln_packages_aux():
     soup = BeautifulSoup(requests.get(settings.CANONICAL_PACKAGE_INFO_URL).text, "html.parser")
-    # print(soup.find(id='cves').tbody)
     table_of_packages = soup.find(id='cves').tbody.find_all('tr')
     dict_of_vulnerable_packages = {}
     # Dict structure
@@ -42,12 +45,15 @@ def create_dict_vuln_packages_aux():
     for table_row in table_of_packages:
         if 'low' in table_row['class'] or 'high' in table_row['class']:
             package_name = table_row.find_all('td', class_='pkg')[0].a.text
+            cve_name = table_row.find_all('td', class_='cve')[0].a.text
+            #cve_url = "https://nvd.nist.gov/vuln/detail/" + cve_name
+            cve_url = "https://cve.mitre.org/cgi-bin/cvename.cgi?name=" + cve_name
             if package_name in dict_of_vulnerable_packages.keys():
                 dict_of_vulnerable_packages[package_name].append(
-                    (table_row.find_all('td', class_='cve')[0], table_row['class'][0]))
+                    (cve_name, cve_url, table_row['class'][0]))
             else:
                 dict_of_vulnerable_packages[package_name] = [
-                    (table_row.find_all('td', class_='cve')[0], table_row['class'][0])]
+                    (cve_name, cve_url, table_row['class'][0])]
     return dict_of_vulnerable_packages
 
 
@@ -135,13 +141,13 @@ def demo_result_view(request):
 
             # With the playbook retrieved access its content and analyze the packages to be installed
             if playbook_content != "":
-                list_of_tasks = parse_playbook_aux(playbook_content, dict_of_vulnerable_packages)
-            #
+                list_of_tasks = parse_playbook_aux(playbook_content)
+                playbook_warnings = analyse_vuln_packages_aux(list_of_tasks, dict_of_vulnerable_packages)
             else:
                 list_of_tasks = []
             context = {
-                'parsed_playbook': str(list_of_tasks),
-                'playbook_tasks': list_of_tasks
+                'parsed_playbook': list_of_tasks,
+                'playbook_warnings': playbook_warnings
             }
             return render(request, "playbooks_parser/demo_result.html", context)
     return {}
