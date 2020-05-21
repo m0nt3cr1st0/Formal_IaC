@@ -8,19 +8,46 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 
-from .models import Task, Playbook, State, Package
 from .forms import ParsePlaybookDemoForm
+from .models import Task, Playbook, State, Package
+from formal_iac.formal_iac import settings
+
+from bs4 import BeautifulSoup
 from graphviz import Digraph
+import requests
 import yaml
 
 
-# TO-DO Parsing Logic
-# TO-DO change type hint to list of tasks
-# Return a list of Tokens
-def parse_playbook_aux(playbook_content: str):
-    list_of_tasks = yaml.load(playbook_content)[0]['tasks']
-    return list_of_tasks
-    # TO-DO: Create a token for each identified task, maybe even instead a task?
+def parse_playbook_aux(playbook_content: str, vuln_packages):
+    playbook_tasks = yaml.load(playbook_content)[0]['tasks']
+    playbook_warnings = []
+    for task in playbook_tasks:
+        task_command = task.keys()[1]
+        package_name = task[task_command]['name']
+        package_operation = task[task_command]['state']
+        if vuln_packages['package_name']:
+            playbook_warnings.append(vuln_packages['package_name'])
+    return playbook_warnings
+
+
+def create_dict_vuln_packages_aux():
+    soup = BeautifulSoup(requests.get(settings.CANONICAL_PACKAGE_INFO_URL).text, "html.parser")
+    # print(soup.find(id='cves').tbody)
+    table_of_packages = soup.find(id='cves').tbody.find_all('tr')
+    dict_of_vulnerable_packages = {}
+    # Dict structure
+    # Entries where the package name is the key
+    # The values is a list of tuples CVE's (including their href) + Impact
+    for table_row in table_of_packages:
+        if 'low' in table_row['class'] or 'high' in table_row['class']:
+            package_name = table_row.find_all('td', class_='pkg')[0].a.text
+            if package_name in dict_of_vulnerable_packages.keys():
+                dict_of_vulnerable_packages[package_name].append(
+                    (table_row.find_all('td', class_='cve')[0], table_row['class'][0]))
+            else:
+                dict_of_vulnerable_packages[package_name] = [
+                    (table_row.find_all('td', class_='cve')[0], table_row['class'][0])]
+    return dict_of_vulnerable_packages
 
 
 def install_package_aux(playbook_id, package_name, package_version):
@@ -90,9 +117,12 @@ def create_playbook(f):
 
 def demo_result_view(request):
     if request.method == 'POST':
+        # Construct source of vulnerable packages
+        dict_of_vulnerable_packages = create_dict_vuln_packages_aux()
         # Retrieve posted information
         form = ParsePlaybookDemoForm(request.POST, request.FILES)
         if form.is_valid():
+            # Form validation, retrieve the playbook to analyze
             if form.cleaned_data['playbook_examples'] == '0' and form.cleaned_data['uploaded_playbook'] is not None:
                 playbook_requested_to_parse = create_playbook(form.cleaned_data['uploaded_playbook'])
                 playbook_content = playbook_requested_to_parse.playbook_content
@@ -102,8 +132,10 @@ def demo_result_view(request):
             else:
                 playbook_content = ""
 
+            # With the playbook retrieved access its content and analyze the packages to be installed
             if playbook_content != "":
                 list_of_tasks = parse_playbook_aux(playbook_content)
+            #
             else:
                 list_of_tasks = []
             context = {
