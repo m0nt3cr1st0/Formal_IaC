@@ -22,7 +22,8 @@ def parse_playbook_aux(playbook_content: str, vuln_packages):
     playbook_tasks = yaml.load(playbook_content)[0]['tasks']
     playbook_warnings = []
     for task in playbook_tasks:
-        task_command = task.keys()[1]
+        # TO-DO: make it expandable to other ansible modules
+        task_command = 'yum'
         package_name = task[task_command]['name']
         package_operation = task[task_command]['state']
         if vuln_packages['package_name']:
@@ -134,7 +135,7 @@ def demo_result_view(request):
 
             # With the playbook retrieved access its content and analyze the packages to be installed
             if playbook_content != "":
-                list_of_tasks = parse_playbook_aux(playbook_content)
+                list_of_tasks = parse_playbook_aux(playbook_content, dict_of_vulnerable_packages)
             #
             else:
                 list_of_tasks = []
