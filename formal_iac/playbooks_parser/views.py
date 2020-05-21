@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, render
 
 from .forms import ParsePlaybookDemoForm
 from .models import Task, Playbook, State, Package
-from formal_iac.formal_iac import settings
+from formal_iac import settings
 
 from bs4 import BeautifulSoup
 from graphviz import Digraph
@@ -79,7 +79,7 @@ def get_current_state_aux():
 
 def index_view(request):
     template = loader.get_template("playbooks_parser/index.html")
-    return HttpResponse(template.render(request))
+    return HttpResponse(template.render({}, request))
 
 
 def playbook_view(request, playbook_id):
