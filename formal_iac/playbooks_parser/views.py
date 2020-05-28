@@ -119,7 +119,7 @@ def create_playbook(f):
     playbook_content = ""
     for line in f:
         playbook_content = playbook_content + line.decode("utf-8")
-    return Playbook.create("Uploaded_playbook", playbook_content)
+    return Playbook(playbook_name="Uploaded_playbook",playbook_content=playbook_content)
 
 
 def demo_result_view(request):

@@ -1,9 +1,16 @@
 from django.db import models
 
 
+class Vulnerability(models.Model):
+    cve = models.CharField(max_length=200)
+    cve_url = models.URLField()
+    impact = models.CharField(max_length=50)
+
+
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
     package_version = models.FloatField()
+    set_of_vulnerabilities = models.ManyToManyField(Vulnerability)
 
     def __str__(self):
         return self.package_name + " " + str(self.package_version)
@@ -12,6 +19,11 @@ class Package(models.Model):
 class State(models.Model):
     state_name = models.CharField(max_length=200)
     set_of_packages = models.ManyToManyField(Package)
+
+
+class PlaybookExecution(models.Model):
+    initial_state = models.OneToOneField(State)
+    list_of_states = models.ManyToManyField(State)
 
 
 class Task(models.Model):
@@ -34,8 +46,3 @@ class Playbook(models.Model):
 
     def __str__(self):
         return self.playbook_name
-
-    @classmethod
-    def create(cls, playbook_name, playbook_content):
-        playbook = cls(playbook_name=playbook_name, playbook_content=playbook_content)
-        return playbook
