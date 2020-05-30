@@ -49,24 +49,22 @@ def demo_result_view(request):
         # Retrieve posted information
         form = ParsePlaybookDemoForm(request.POST, request.FILES)
         if form.is_valid():
-            # Form validation, retrieve the playbook to analyze
+            # Form validation, create/retrieve the playbook to analyze
             if form.cleaned_data['playbook_examples'] == '0' and form.cleaned_data['uploaded_playbook'] is not None:
-                playbook_requested_to_parse = create_playbook(form.cleaned_data['uploaded_playbook'])
-                playbook_content = playbook_requested_to_parse.playbook_content
+                playbook_to_analyze = create_playbook(form.cleaned_data['uploaded_playbook'])
             elif form.cleaned_data['playbook_examples'] != '0':
-                playbook_requested_to_parse = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
-                playbook_content = playbook_requested_to_parse.playbook_content
+                playbook_to_analyze = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
             else:
-                playbook_content = ""
-
-            # With the playbook retrieved access its content and analyze the packages to be installed
-            if playbook_content != "":
-                list_of_tasks = parse_playbook_aux(playbook_content)
-                playbook_warnings = analyse_vuln_packages_aux(list_of_tasks, dict_of_vulnerable_packages)
+                playbook_to_analyze = ""
+            # Begin the analysis
+            # With the playbook created/retrieved access its content and analyze the packages to be installed
+            if playbook_to_analyze != "":
+                playbook_warnings = analyse_vuln_packages_aux(playbook_to_analyze, dict_of_vulnerable_packages)
+                list_of_tasks = playbook_to_analyze.list_of_tasks
             else:
                 list_of_tasks = []
             context = {
-                'parsed_playbook': list_of_tasks,
+                'playbook_tasks': list_of_tasks,
                 'playbook_warnings': playbook_warnings
             }
             return render(request, "playbooks_parser/demo_result.html", context)

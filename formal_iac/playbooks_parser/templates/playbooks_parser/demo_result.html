@@ -18,11 +18,11 @@
         </nav>
         <div class="row">
             <!-- This paragraph will be filled with the parsed playbook -->
-            {% if parsed_playbook %}
+            {% if playbook_tasks %}
             <div class="col-md-8 parsed-playbook">
                 <br>
                     <p> Your playbook contains the following tasks </p>
-                    {% for task in parsed_playbook %}
+                    {% for task in playbook_tasks.all %}
                     <p> {{ task }} </p>
                     {% endfor %}
             </div>
