@@ -1,87 +1,15 @@
-
-from django.http import JsonResponse
-
 # views.py
-from django.db import connections
-from django.db.models import Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 
+from .auxiliary_functions import create_dict_vuln_packages_aux, create_playbook, parse_playbook_aux, \
+    analyse_vuln_packages_aux
 from .forms import ParsePlaybookDemoForm
 from .models import Task, Playbook, State, Package
-from formal_iac import settings
 
-from bs4 import BeautifulSoup
 from graphviz import Digraph
-import requests
 import yaml
-
-
-def parse_playbook_aux(playbook_content: str):
-    playbook_tasks = yaml.load(playbook_content)[0]['tasks']
-    return playbook_tasks
-
-
-def analyse_vuln_packages_aux(playbook_tasks, vuln_packages):
-    playbook_warnings = []
-    for task in playbook_tasks:
-        # TO-DO: make it expandable to other ansible modules
-        task_command = 'yum'
-        package_name = task[task_command]['name']
-        package_operation = task[task_command]['state']
-        if package_name in vuln_packages.keys():
-            playbook_warnings.append((package_name, vuln_packages[package_name]))
-    return playbook_warnings
-
-
-def create_dict_vuln_packages_aux():
-    soup = BeautifulSoup(requests.get(settings.CANONICAL_PACKAGE_INFO_URL).text, "html.parser")
-    table_of_packages = soup.find(id='cves').tbody.find_all('tr')
-    dict_of_vulnerable_packages = {}
-    # Dict structure
-    # Entries where the package name is the key
-    # The values is a list of tuples CVE's (including their href) + Impact
-    for table_row in table_of_packages:
-        if 'low' in table_row['class'] or 'high' in table_row['class']:
-            package_name = table_row.find_all('td', class_='pkg')[0].a.text
-            cve_name = table_row.find_all('td', class_='cve')[0].a.text
-            #cve_url = "https://nvd.nist.gov/vuln/detail/" + cve_name
-            cve_url = "https://cve.mitre.org/cgi-bin/cvename.cgi?name=" + cve_name
-            if package_name in dict_of_vulnerable_packages.keys():
-                dict_of_vulnerable_packages[package_name].append(
-                    (cve_name, cve_url, table_row['class'][0]))
-            else:
-                dict_of_vulnerable_packages[package_name] = [
-                    (cve_name, cve_url, table_row['class'][0])]
-    return dict_of_vulnerable_packages
-
-
-def install_package_aux(playbook_id, package_name, package_version):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install = State.objects.all()['current_state']
-    state_to_install.set_of_packages.add(installed_package)
-
-
-def update_package_aux(playbook_id, package_name, package_version, state_to_install):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install.set_of_packages.add(installed_package)
-
-
-def delete_package_aux(playbook_id, package_name, package_version):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install = State.objects.all()['current_state']
-    state_to_install.set_of_packages.add(installed_package)
-
-
-def get_current_state_aux():
-    return State.objects.filter(current_state=True)
 
 
 def index_view(request):
@@ -112,14 +40,6 @@ def demo_view(request):
         'form': form
     }
     return render(request, 'playbooks_parser/demo.html', context)
-
-
-# Auxiliary function to create a playbook from an uploaded file
-def create_playbook(f):
-    playbook_content = ""
-    for line in f:
-        playbook_content = playbook_content + line.decode("utf-8")
-    return Playbook(playbook_name="Uploaded_playbook",playbook_content=playbook_content)
 
 
 def demo_result_view(request):
