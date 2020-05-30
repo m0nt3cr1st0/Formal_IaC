@@ -90,6 +90,5 @@ def graph_view(request):
     # For every action define a transition and register that state
     # If you are adding/updating a package check the package with the list
     # Color it if its on it with red or orange, or green if not
-
     return render(request, 'playbooks_parser/graph.html', context)
 
