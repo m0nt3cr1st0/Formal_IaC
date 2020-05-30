@@ -21,7 +21,6 @@ class State(models.Model):
 
 
 class PlaybookExecution(models.Model):
-    initial_state = models.OneToOneField(State)
     list_of_states = models.ManyToManyField(State)
 
 
