@@ -3,8 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 
-from .auxiliary_functions import create_dict_vuln_packages_aux, create_playbook, parse_playbook_aux, \
-    analyse_vuln_packages_aux
+from .auxiliary_functions import create_playbook, parse_playbook_aux, analyse_vuln_packages
 from .forms import ParsePlaybookDemoForm
 from .models import Task, Playbook, State, Package
 
@@ -44,8 +43,6 @@ def demo_view(request):
 
 def demo_result_view(request):
     if request.method == 'POST':
-        # Construct source of vulnerable packages
-        dict_of_vulnerable_packages = create_dict_vuln_packages_aux()
         # Retrieve posted information
         form = ParsePlaybookDemoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -56,10 +53,11 @@ def demo_result_view(request):
                 playbook_to_analyze = Playbook.objects.get(pk=form.cleaned_data['playbook_examples'])
             else:
                 playbook_to_analyze = ""
+
             # Begin the analysis
             # With the playbook created/retrieved access its content and analyze the packages to be installed
             if playbook_to_analyze != "":
-                playbook_warnings = analyse_vuln_packages_aux(playbook_to_analyze, dict_of_vulnerable_packages)
+                playbook_warnings = analyse_vuln_packages(playbook_to_analyze)
                 list_of_tasks = playbook_to_analyze.list_of_tasks
             else:
                 list_of_tasks = []

@@ -36,8 +36,10 @@ def create_dict_vuln_packages_aux():
 
 # INPUT: a list of dictionaries specifying tasks on a playbook (in this case package installations)
 # OUTPUT: a list of tuples where first element is the package name and the second element is the available CVEs
-def analyse_vuln_packages_aux(playbook, vuln_packages):
+def analyse_vuln_packages(playbook):
     playbook_warnings = []
+    # Construct source of vulnerable packages
+    vuln_packages = create_dict_vuln_packages_aux()
     for task in playbook.list_of_tasks.all():
         # TO-DO: make it expandable to other ansible modules
         package_name = task.module_arguments
