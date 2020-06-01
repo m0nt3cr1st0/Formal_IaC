@@ -1,4 +1,4 @@
-from .models import Package, Playbook, PlaybookExecution, State, Task
+from .models import Package, Playbook, PlaybookExecution, State, Task, Vulnerability
 from formal_iac import settings
 
 from bs4 import BeautifulSoup
@@ -63,8 +63,8 @@ def create_playbook_execution(playbook_to_analyze):
             else:
                 package_to_install = Package(package_name=task.module_arguments)
                 package_to_install.save()
-                # TODO check if the package is vulnerable and add those vulnerabilities to the package
                 package_vulnerabilities = check_vuln(package_to_install)
+                package_to_install.set_of_vulnerabilities.set(package_vulnerabilities)
             # TODO Take the previous state and add those packages to the relation too
             state_aux.set_of_packages.add(package_to_install)
             execution_created.list_of_states.add(state_aux)
@@ -96,10 +96,14 @@ def create_dict_vuln_packages_aux():
 # OUTPUT: Either a list of vulnerability objects or an empty list
 def check_vuln(package):
     vulnerabilities_dict = create_dict_vuln_packages_aux()
+    package_vulnerabilities = []
+    # TODO create vulnerability DBs rather than retrieving it for every task
     if package.package_name in vulnerabilities_dict.keys():
-        return vulnerabilities_dict[package.package_name]
-    else:
-        return []
+        for vulnerability in vulnerabilities_dict[package.package_name]:
+            new_vuln = Vulnerability(cve=vulnerability[0], cve_url=vulnerability[1], impact=vulnerability[2])
+            new_vuln.save()
+            package_vulnerabilities.append(new_vuln)
+    return package_vulnerabilities
 
 
 # INPUT: a list of dictionaries specifying tasks on a playbook (in this case package installations)
@@ -114,26 +118,3 @@ def analyse_vuln_packages(playbook):
             playbook_warnings.append((package_name, vuln_packages[package_name]))
     return playbook_warnings
 
-
-# Probably not useful but keep it just in case
-def install_package_aux(playbook_id, package_name, package_version):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install = State.objects.all()['current_state']
-    state_to_install.set_of_packages.add(installed_package)
-
-
-def update_package_aux(playbook_id, package_name, package_version, state_to_install):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install.set_of_packages.add(installed_package)
-
-
-def delete_package_aux(playbook_id, package_name, package_version):
-    Playbook.objects.filter(pk=playbook_id)
-    installed_package = Package(package_name=package_name, package_version=package_version)
-    installed_package.save()
-    state_to_install = State.objects.all()['current_state']
-    state_to_install.set_of_packages.add(installed_package)
