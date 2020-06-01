@@ -116,17 +116,3 @@ def check_vuln(package):
     return package_vulnerabilities
 
 
-# INPUT: a list of dictionaries specifying tasks on a playbook (in this case package installations)
-# OUTPUT: a list of tuples where first element is the package name and the second element is the available CVEs
-# TODO instead of analyze a playbook analyze a playbook execution, iterate over the states
-# IDEA: A list of tuples (state_n, warnings_of_state_n)
-def analyse_vuln_packages(playbook):
-    playbook_warnings = []
-    # Construct source of vulnerable packages
-    vuln_packages = create_dict_vuln_packages_aux()
-    for task in playbook.list_of_tasks.all():
-        package_name = task.module_arguments
-        if package_name in vuln_packages.keys():
-            playbook_warnings.append((package_name, vuln_packages[package_name]))
-    return playbook_warnings
-

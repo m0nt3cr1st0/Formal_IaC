@@ -30,18 +30,26 @@
             <div class="col-md-4">
                 <!-- If the request to parse the playbook has been done then display this paragraph -->
                 <div>
-                    {% if playbook_warnings %}
+                    {% if playbook_execution %}
                     <p>
                     The execution of your playbook will introduce the following vulnerabilities into your system:
                     </p>
                     <ul>
-                        {% for warning in playbook_warnings %}
-                        <li> {{ warning.0 }}:
+                        {% for state in playbook_execution.list_of_states.all %}
+                        <li> {{ state.state_name }}:
+                            {% for package in state.set_of_packages.all %}
+                            {% if package.set_of_vulnerabilities.all %}
                             <ul>
-                                {% for cve in warning.1 %}
-                                <li><a href="{{ cve.1 }}">{{ cve.0 }} </a>  Impact: {{ cve.2 }}</li>
-                                {% endfor %}
+                                <li> {{ package.package_name }}:
+                                    <ul>
+                                    {% for vulnerability in package.set_of_vulnerabilities.all %}
+                                        <li><a href="{{ vulnerability.cve_url }}">{{ vulnerability.cve }}</a>  Impact: {{ vulnerability.impact }}</li>
+                                    {% endfor %}
+                                    </ul>
+                                </li>
                             </ul>
+                            {% endif %}
+                            {% endfor %}
                         </li>
                         {% endfor %}
                     </ul>

@@ -57,14 +57,13 @@ def demo_result_view(request):
             # Begin the analysis
             # With the playbook created/retrieved access its content and analyze the packages to be installed
             if playbook_to_analyze != "":
-                create_playbook_execution(playbook_to_analyze)
-                playbook_warnings = analyse_vuln_packages(playbook_to_analyze)
+                playbook_execution = create_playbook_execution(playbook_to_analyze)
                 list_of_tasks = playbook_to_analyze.list_of_tasks
             else:
                 list_of_tasks = []
             context = {
                 'playbook_tasks': list_of_tasks,
-                'playbook_warnings': playbook_warnings
+                'playbook_execution': playbook_execution
             }
             return render(request, "playbooks_parser/demo_result.html", context)
     return {}
