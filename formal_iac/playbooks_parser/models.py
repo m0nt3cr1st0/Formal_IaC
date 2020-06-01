@@ -6,6 +6,9 @@ class Vulnerability(models.Model):
     cve_url = models.URLField()
     impact = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.cve
+
 
 class Package(models.Model):
     package_name = models.CharField(max_length=200)
@@ -19,9 +22,16 @@ class State(models.Model):
     state_name = models.CharField(max_length=200)
     set_of_packages = models.ManyToManyField(Package)
 
+    def __str__(self):
+        return self.state_name
+
 
 class PlaybookExecution(models.Model):
+    execution_id = models.CharField(max_length=200)
     list_of_states = models.ManyToManyField(State)
+
+    def __str__(self):
+        return self.execution_id
 
 
 class Task(models.Model):
