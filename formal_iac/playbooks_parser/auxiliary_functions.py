@@ -43,19 +43,22 @@ def create_playbook(uploaded_content):
 # Auxiliary function to create the states the execution of a playbook will generate
 def create_playbook_execution(playbook_to_analyze):
     pl_name = playbook_to_analyze.playbook_name
+    state_counter = 0
     execution_created = PlaybookExecution(execution_id=pl_name + " analysis")
     execution_created.save()
-    initial_state = State(state_name=pl_name + " initial state")
+    initial_state = State(state_name=pl_name + " state " + str(state_counter))
     initial_state.save()
     execution_created.list_of_states.add(initial_state)
-    state_counter = 0
+    previous_state = initial_state
     # For each task in the playbook's list of tasks, create a state
     for task in playbook_to_analyze.list_of_tasks.all():
         state_counter += 1
+        new_state_name = pl_name + " state " + str(state_counter)
+        new_state = State(state_name=new_state_name)
+        new_state.save()
+        new_state.set_of_packages.set(previous_state.set_of_packages.all())
         # The new state is the previous one with one more package
         if task.module_options == 'present':
-            state_aux = State(state_name=pl_name + " state " + str(state_counter))
-            state_aux.save()
             # The package exists, retrieve it
             if Package.objects.filter(package_name=task.module_arguments):
                 package_to_install = Package.objects.filter(package_name=task.module_arguments)[0]
@@ -65,9 +68,16 @@ def create_playbook_execution(playbook_to_analyze):
                 package_to_install.save()
                 package_vulnerabilities = check_vuln(package_to_install)
                 package_to_install.set_of_vulnerabilities.set(package_vulnerabilities)
-            # TODO Take the previous state and add those packages to the relation too
-            state_aux.set_of_packages.add(package_to_install)
-            execution_created.list_of_states.add(state_aux)
+            new_state.set_of_packages.add(package_to_install)
+        elif task.module_options == 'absent':
+            # If the package exists -> it has been installed or part of the initial state -> Remove it
+            if Package.objects.filter(package_name=task.module_arguments):
+                package_to_remove = Package.objects.filter(package_name=task.module_arguments)[0]
+                new_state.set_of_packages.remove(package_to_remove)
+            # Else the package is not installed so do nothing
+        execution_created.list_of_states.add(new_state)
+        previous_state = new_state
+    return execution_created
 
 
 def create_dict_vuln_packages_aux():
@@ -108,6 +118,8 @@ def check_vuln(package):
 
 # INPUT: a list of dictionaries specifying tasks on a playbook (in this case package installations)
 # OUTPUT: a list of tuples where first element is the package name and the second element is the available CVEs
+# TODO instead of analyze a playbook analyze a playbook execution, iterate over the states
+# IDEA: A list of tuples (state_n, warnings_of_state_n)
 def analyse_vuln_packages(playbook):
     playbook_warnings = []
     # Construct source of vulnerable packages
