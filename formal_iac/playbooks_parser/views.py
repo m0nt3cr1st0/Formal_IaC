@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 
-from .auxiliary_functions import create_playbook, create_playbook_execution, analyse_vuln_packages
+from .auxiliary_functions import create_playbook, create_playbook_execution
 from .forms import ParsePlaybookDemoForm
-from .models import Task, Playbook, State, Package
+from .models import Playbook
 
 from graphviz import Digraph
 import yaml

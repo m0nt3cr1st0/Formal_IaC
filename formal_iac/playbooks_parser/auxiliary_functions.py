@@ -19,7 +19,7 @@ def create_tasks(playbook_content: str):
     created_tasks = []
     for task in list_of_tasks:
         task_created = Task(task_name=task['name'] + " " + str(datetime.now()), task_module=list(task)[1],
-                            module_arguments=task['yum']['name'], module_options=task['yum']['state'])
+                            module_arguments=task['package']['name'], module_options=task['package']['state'])
         task_created.save()
         created_tasks.append(task_created)
     return created_tasks
