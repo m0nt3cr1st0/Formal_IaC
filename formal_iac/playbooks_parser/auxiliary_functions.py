@@ -63,6 +63,8 @@ def create_playbook_execution(playbook_to_analyze):
             else:
                 package_to_install = Package(package_name=task.module_arguments)
                 package_to_install.save()
+                # TODO check if the package is vulnerable and add those vulnerabilities to the package
+                package_vulnerabilities = check_vuln(package_to_install)
             # TODO Take the previous state and add those packages to the relation too
             state_aux.set_of_packages.add(package_to_install)
             execution_created.list_of_states.add(state_aux)
@@ -88,6 +90,16 @@ def create_dict_vuln_packages_aux():
                 dict_of_vulnerable_packages[package_name] = [
                     (cve_name, cve_url, table_row['class'][0])]
     return dict_of_vulnerable_packages
+
+
+# INPUT: A package
+# OUTPUT: Either a list of vulnerability objects or an empty list
+def check_vuln(package):
+    vulnerabilities_dict = create_dict_vuln_packages_aux()
+    if package.package_name in vulnerabilities_dict.keys():
+        return vulnerabilities_dict[package.package_name]
+    else:
+        return []
 
 
 # INPUT: a list of dictionaries specifying tasks on a playbook (in this case package installations)
