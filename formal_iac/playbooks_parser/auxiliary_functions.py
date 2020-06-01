@@ -56,11 +56,15 @@ def create_playbook_execution(playbook_to_analyze):
         if task.module_options == 'present':
             state_aux = State(state_name=pl_name + " state " + str(state_counter))
             state_aux.save()
-            # TODO Try to fetch the package if it does not exists create it
-            new_package = Package(package_name=task.module_arguments)
-            new_package.save()
-            # TODO Take the previous state and add those to the relation too
-            state_aux.set_of_packages.add(new_package)
+            # The package exists, retrieve it
+            if Package.objects.filter(package_name=task.module_arguments):
+                package_to_install = Package.objects.filter(package_name=task.module_arguments)[0]
+            # The package does not exists, create it
+            else:
+                package_to_install = Package(package_name=task.module_arguments)
+                package_to_install.save()
+            # TODO Take the previous state and add those packages to the relation too
+            state_aux.set_of_packages.add(package_to_install)
             execution_created.list_of_states.add(state_aux)
 
 
