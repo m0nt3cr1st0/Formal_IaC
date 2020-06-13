@@ -17,11 +17,22 @@
             <a href="/admin" class="nav-item"> Admin </a>
         </nav>
         <h1> Formal Verification and Static Analysis of Infrastructure as Code Environments </h1>
+        <br>
         <p>
-            Code linting, compilers, static and dynamic analysis...nowadays software development
-            makes use of several tools that by formal methods, aim at improving the security and reliability of our systems.
-            However, in this new paradigm where Infrastructure as a Code and configuration management has irrupted in modern organizations,
-            the formal verification field has not been as developed as in its pure software homologous.
+            Code linting, compilers, static and dynamic analysis...nowadays software development  makes use of several
+            tools that by formal methods, aim at improving the security and reliability of our systems. However,
+            in this new paradigm where Infrastructure as a Code and configuration management has irrupted in modern
+            organizations, the formal verification field has not been as developed as in its pure software homologous.
+        </p>
+        <br>
+        <p>
+            This project establishes an analysis framework for the study of security properties on Infrastructure as
+            Code scripts for Ansible. This framework is based in finite state machines that allows to consider
+            intermediate execution states and the impact these have on the properties of the host where the script is
+            being run. We provide a specific example of a use case of this analysis framework by studying the process
+            of package management and how the different possible states can introduce vulnerabilities in the system.
+            For this analysis we follow a qualitative approach by using well-known sources of intelligence regarding
+            vulnerability management
         </p>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
