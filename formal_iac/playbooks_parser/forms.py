@@ -1,6 +1,9 @@
 from django import forms
 
-AVAILABLE_ANALYSES = [('0', 'Vulnerability Analysis')]
+AVAILABLE_ANALYSES = [('0', 'Vulnerability Analysis'),
+                      ('1', 'Example Analysis 1'),
+                      ('2', 'Example Analysis 2'),
+                      ('3', 'Example Analysis 3')]
 
 
 class SelectAnalysisForm(forms.Form):
