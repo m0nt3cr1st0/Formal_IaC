@@ -16,12 +16,13 @@
             <a href="{% url 'playbooks_parser:select_analysis_view' %}" class="nav-item"> Demo </a>
             <a href="/admin" class="nav-item"> Admin </a>
         </nav>
+
         <div class="row">
             <div class="col">
-                <form enctype="multipart/form-data" method="post" action="{% url 'playbooks_parser:demo_result_view' %}">
+                <form enctype="multipart/form-data" method="post" action="{% url 'playbooks_parser:select_analysis_view' %}">
                     {% csrf_token %}
                     {{ form }} <br> <br>
-                    <input type="submit" value="Analyze Playbook">
+                    <input type="submit" value="Try the selected Analysis">
                 </form>
             </div>
         </div>

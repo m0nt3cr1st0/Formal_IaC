@@ -1,10 +1,10 @@
 # views.py
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .auxiliary_functions import create_playbook, create_playbook_execution
-from .forms import ParsePlaybookDemoForm
+from .forms import ParsePlaybookDemoForm, SelectAnalysisForm
 from .models import Playbook
 
 from graphviz import Digraph
@@ -31,6 +31,17 @@ def playbook_parsed_view(request, playbook_id):
         'parsed_playbook': parsed_playbook,
     }
     return render(request, 'playbooks_parser/parsed_playbook.html', {'parsed_playbook': parsed_playbook})
+
+
+def select_analysis_view(request):
+    if request.method == 'POST':
+        return redirect('/demo')
+    else:
+        form = SelectAnalysisForm()
+        context = {
+            'form': form
+        }
+        return render(request, 'playbooks_parser/select_analysis.html', context)
 
 
 def demo_view(request):
