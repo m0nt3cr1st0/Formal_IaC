@@ -2,9 +2,10 @@ from .models import Package, Playbook, PlaybookExecution, State, Task, Vulnerabi
 from formal_iac import settings
 
 from bs4 import BeautifulSoup
+from datetime import datetime
+from graphviz import Digraph
 import requests
 import yaml
-from datetime import datetime
 
 
 def parse_playbook_aux(playbook_content: str):
@@ -116,3 +117,14 @@ def check_vuln(package):
     return package_vulnerabilities
 
 
+def build_fsm_from_execution(playbook_execution):
+    dot = Digraph(comment='plotted state')
+#    state_counter = 0
+#    for state in playbook_execution.list_of_states:
+#        dot.node('S' + state_counter, state.set_of_packages)
+#        state_counter = state_counter + 1
+    dot.node('A', '[test_2, test_3]')
+    dot.node('B', '[test_1, test_2]')
+    dot.edge('A', 'B', 'add test_1')
+    dot.format = 'svg'
+    return dot.pipe().decode('utf-8')
