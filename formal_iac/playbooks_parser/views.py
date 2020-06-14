@@ -70,13 +70,11 @@ def demo_result_view(request):
             if playbook_to_analyze != "":
                 playbook_execution = create_playbook_execution(playbook_to_analyze)
                 fsm_representing_execution = build_fsm_from_execution(playbook_execution)
-                # list_of_tasks = playbook_to_analyze.list_of_tasks
             else:
-                # list_of_tasks = []
                 fsm_representing_execution = []
             context = {
                 # 'playbook_tasks': list_of_tasks,
-                'playbook_tasks': fsm_representing_execution,
+                'execution_graph': fsm_representing_execution,
                 'playbook_execution': playbook_execution
             }
             return render(request, "playbooks_parser/demo_result.html", context)

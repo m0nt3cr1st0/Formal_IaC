@@ -18,11 +18,11 @@
         </nav>
         <div class="row">
             <!-- This paragraph will be filled with the parsed playbook -->
-            {% if playbook_tasks %}
+            {% if execution_graph %}
             <div class="col-md-8 parsed-playbook">
                 <br>
                     <p> Your playbook contains the following tasks </p>
-                    {{ playbook_tasks|safe }}
+                    {{ execution_graph|safe }}
             </div>
             <!-- Maybe include the state graph as well? -->
             <div class="col-md-4">
