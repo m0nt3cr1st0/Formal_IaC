@@ -117,14 +117,19 @@ def check_vuln(package):
     return package_vulnerabilities
 
 
-def build_fsm_from_execution(playbook_execution):
+def build_fsm_from_execution(playbook_execution, playbook_to_analyze):
     dot = Digraph(comment='plotted state')
-#    state_counter = 0
-#    for state in playbook_execution.list_of_states:
-#        dot.node('S' + state_counter, state.set_of_packages)
-#        state_counter = state_counter + 1
-    dot.node('A', '[test_2, test_3]')
-    dot.node('B', '[test_1, test_2]')
-    dot.edge('A', 'B', 'add test_1')
+    state_counter = -1
+    task_counter = 0
+    for state in playbook_execution.list_of_states.all():
+        state_packages = []
+        state_counter = state_counter + 1
+        for package in state.set_of_packages.all():
+            state_packages.append(str(package))
+        dot.node("S" + str(state_counter), str(state_packages))
+        if state_counter != 0:
+            dot.edge("S" + str(state_counter-1), "S" + str(state_counter), str(playbook_to_analyze.list_of_tasks.all(
+            )[task_counter]))
+            task_counter = task_counter + 1
     dot.format = 'svg'
     return dot.pipe().decode('utf-8')

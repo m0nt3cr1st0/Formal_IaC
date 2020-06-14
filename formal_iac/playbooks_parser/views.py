@@ -69,7 +69,7 @@ def demo_result_view(request):
             # With the playbook created/retrieved access its content and analyze the packages to be installed
             if playbook_to_analyze != "":
                 playbook_execution = create_playbook_execution(playbook_to_analyze)
-                fsm_representing_execution = build_fsm_from_execution(playbook_execution)
+                fsm_representing_execution = build_fsm_from_execution(playbook_execution, playbook_to_analyze)
             else:
                 fsm_representing_execution = []
             context = {
